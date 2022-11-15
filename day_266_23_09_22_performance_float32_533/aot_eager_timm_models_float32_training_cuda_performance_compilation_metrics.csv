@@ -1,0 +1,2 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert,create_aot_dispatcher_function
+cuda,inception_v3,128,1.431323,4.727454

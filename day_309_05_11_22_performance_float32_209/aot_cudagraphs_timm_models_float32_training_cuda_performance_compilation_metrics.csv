@@ -1,0 +1,9 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert
+cuda,coat_lite_mini,128,1.602903
+cuda,deit_base_distilled_patch16_224,64,1.341285
+cuda,res2net101_26w_4s,64,5.274894
+cuda,resmlp_12_224,128,1.002853
+cuda,selecsls42b,128,1.338395
+cuda,twins_pcpvt_base,64,3.515854
+cuda,visformer_small,128,1.349696
+cuda,vit_base_patch16_224,64,1.308748

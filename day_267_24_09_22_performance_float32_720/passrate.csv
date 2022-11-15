@@ -1,0 +1,6 @@
+,Compiler,huggingface
+eager,eager,"98%, 43/44"
+aot_eager,aot_eager,"93%, 41/44"
+aot_cudagraphs,aot_cudagraphs,"82%, 36/44"
+aot_nvfuser,aot_nvfuser,"2%, 1/44"
+inductor,inductor,"68%, 30/44"

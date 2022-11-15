@@ -1,0 +1,6 @@
+,Compiler,torchbench
+eager,eager,1.54
+aot_eager,aot_eager,4.64
+aot_cudagraphs,aot_cudagraphs,6.90
+aot_nvfuser,aot_nvfuser,18.62
+inductor,inductor,12.65

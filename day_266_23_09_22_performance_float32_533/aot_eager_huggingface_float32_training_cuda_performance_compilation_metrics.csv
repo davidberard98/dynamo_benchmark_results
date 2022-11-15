@@ -1,0 +1,3 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert,create_aot_dispatcher_function
+cuda,AlbertForMaskedLM,2,1.370343,4.015658
+cuda,AlbertForQuestionAnswering,2,1.346595,3.880982

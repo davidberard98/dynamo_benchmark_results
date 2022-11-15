@@ -1,0 +1,10 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert
+cuda,BartForConditionalGeneration,2,5.978755
+cuda,DistilBertForMaskedLM,64,1.118153
+cuda,DistilBertForQuestionAnswering,64,1.148703
+cuda,DistillGPT2,1,1.204269
+cuda,GPT2ForSequenceClassification,4,2.375555
+cuda,MobileBertForMaskedLM,32,13.128650
+cuda,OPTForCausalLM,32,2.236796
+cuda,T5ForConditionalGeneration,4,3.377654
+cuda,XGLMForCausalLM,8,4.789900

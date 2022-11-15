@@ -1,0 +1,2 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert,create_aot_dispatcher_function
+cuda,GoogleFnet,1,1.029814,2.570227

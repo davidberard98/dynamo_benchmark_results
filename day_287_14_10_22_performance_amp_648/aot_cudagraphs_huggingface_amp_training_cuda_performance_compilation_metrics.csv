@@ -1,0 +1,4 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert,create_aot_dispatcher_function
+cuda,AllenaiLongformerBase,1,9.070913,8.865111
+cuda,DebertaForMaskedLM,4,6.134367,6.929363
+cuda,DebertaForQuestionAnswering,4,6.080670,6.823272

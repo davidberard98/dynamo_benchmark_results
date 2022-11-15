@@ -1,0 +1,5 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert
+cuda,DebertaForMaskedLM,4,6.095326
+cuda,DebertaForQuestionAnswering,8,5.970346
+cuda,DistillGPT2,1,0.980974
+cuda,GPT2ForSequenceClassification,4,1.958270

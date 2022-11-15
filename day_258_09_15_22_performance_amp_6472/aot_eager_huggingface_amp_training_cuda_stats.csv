@@ -1,0 +1,17 @@
+dev,name,batch_size,total_aot_graphs,ok_aot_graphs
+cuda,AlbertForQuestionAnswering,2,1,1
+cuda,BertForQuestionAnswering,64,1,1
+cuda,DistilBertForQuestionAnswering,32,1,1
+cuda,ElectraForQuestionAnswering,64,1,1
+cuda,GPT2ForSequenceClassification,4,2,2
+,,,0,0
+cuda,LayoutLMForSequenceClassification,16,2,2
+cuda,M2M100ForConditionalGeneration,2,7,7
+cuda,MT5ForConditionalGeneration,2,1,1
+cuda,MegatronBertForQuestionAnswering,8,1,1
+cuda,MobileBertForQuestionAnswering,32,1,1
+cuda,PegasusForCausalLM,8,4,3
+cuda,PegasusForConditionalGeneration,4,7,5
+cuda,RobertaForQuestionAnswering,64,1,1
+cuda,Speech2Text2ForCausalLM,64,4,4
+cuda,XGLMForCausalLM,1,4,4

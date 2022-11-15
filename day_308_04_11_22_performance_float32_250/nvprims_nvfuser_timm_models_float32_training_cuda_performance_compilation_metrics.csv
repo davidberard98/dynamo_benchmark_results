@@ -1,0 +1,10 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert
+cuda,adv_inception_v3,128,2.701794
+cuda,gluon_inception_v3,128,2.767592
+cuda,inception_v3,128,2.693326
+cuda,nfnet_l0,128,2.738446
+cuda,res2net101_26w_4s,64,5.297533
+cuda,res2net50_14w_8s,128,4.579864
+cuda,res2next50,128,2.706499
+cuda,selecsls42b,128,1.342087
+cuda,visformer_small,128,1.533015

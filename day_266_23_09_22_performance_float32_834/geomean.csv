@@ -1,0 +1,6 @@
+,Compiler,torchbench
+eager,eager,1.00x
+aot_eager,aot_eager,1.05x
+aot_cudagraphs,aot_cudagraphs,1.06x
+aot_nvfuser,aot_nvfuser,1.28x
+inductor,inductor,1.43x

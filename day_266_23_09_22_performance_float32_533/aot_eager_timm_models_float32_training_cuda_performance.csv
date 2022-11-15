@@ -1,0 +1,2 @@
+dev,name,batch_size,speedup,compilation_latency,compression_ratio
+cuda,inception_v3,128,0.9981,6.1358,0.8691

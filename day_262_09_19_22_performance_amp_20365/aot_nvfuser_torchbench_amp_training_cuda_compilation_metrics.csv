@@ -1,0 +1,13 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert,create_aot_dispatcher_function
+cuda,dcgan,32,0.333150,0.394175
+cuda,demucs,4,0.653442
+cuda,drq,1,0.388095,0.529546
+cuda,moco,32,1.961785,0.195259
+cuda,nvidia_deeprecommender,256,0.355431,0.362624
+cuda,pytorch_CycleGAN_and_pix2pix,1,0.566766,2.306347
+cuda,pytorch_stargan,16,0.565512,1.990033
+cuda,soft_actor_critic,256,0.310191,0.268875
+cuda,squeezenet1_1,32,0.512081,1.528875
+cuda,timm_vision_transformer,8,1.076271,4.365956
+cuda,tts_angular,64,0.496448,0.156492
+cuda,vgg16,64,0.421438,0.950597

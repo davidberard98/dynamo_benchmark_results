@@ -1,0 +1,15 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert
+cuda,alexnet,128,0.325560
+cuda,dcgan,32,0.285906
+cuda,demucs,4,0.906815
+cuda,hf_Longformer,2,13.396688
+cuda,hf_Reformer,4,3.772454
+cuda,lennard_jones,1000,0.253155
+cuda,mnasnet1_0,32,3.764748
+cuda,nvidia_deeprecommender,256,0.322674
+cuda,pytorch_CycleGAN_and_pix2pix,1,0.950677
+cuda,pytorch_stargan,16,0.988957
+cuda,soft_actor_critic,256,0.289852
+cuda,squeezenet1_1,32,0.773623
+cuda,tts_angular,64,0.336077
+cuda,vgg16,64,0.501698

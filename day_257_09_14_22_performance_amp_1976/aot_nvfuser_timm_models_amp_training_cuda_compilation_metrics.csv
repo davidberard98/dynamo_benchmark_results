@@ -1,0 +1,10 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert,create_aot_dispatcher_function
+cuda,beit_base_patch16_224,64,1.554865,6.040293
+cuda,cait_m36_384,2,4.095778,26.036502
+cuda,convnext_base,32,1.816913,8.632742
+cuda,crossvit_9_240,64,1.795285,9.318485
+cuda,cspdarknet53,64,1.647190,5.239214
+cuda,gmlp_s16_224,64,1.606289,8.245768
+cuda,nfnet_l0,64,2.068287,6.992414
+cuda,swin_base_patch4_window7_224,64,3.102133,15.117528
+cuda,vit_base_patch16_224,64,1.192125,4.984118

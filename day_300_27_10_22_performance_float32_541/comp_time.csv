@@ -1,0 +1,2 @@
+,Compiler,torchbench,huggingface,timm_models
+inductor_no_cudagraphs,inductor_no_cudagraphs,57.71,46.53,79.81

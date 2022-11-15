@@ -1,0 +1,6 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert
+cuda,fbnetc_100,128,6.951685
+cuda,mixer_b16_224,64,3.412395
+cuda,mnasnet_100,128,5.022319
+cuda,resmlp_12_224,128,3.286967
+cuda,spnasnet_100,128,6.567778

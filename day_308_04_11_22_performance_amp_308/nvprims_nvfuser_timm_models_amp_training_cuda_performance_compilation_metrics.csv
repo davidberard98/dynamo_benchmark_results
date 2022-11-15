@@ -1,0 +1,3 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert
+cuda,dm_nfnet_f0,128,3.098144
+cuda,nfnet_l0,128,2.838088

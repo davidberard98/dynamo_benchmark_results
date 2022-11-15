@@ -1,0 +1,14 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert,create_aot_dispatcher_function
+cuda,AlbertForMaskedLM,2,1.611056,4.283001
+cuda,BigBird,1,8.530128,4.532408
+cuda,DistillGPT2,1,0.990215,1.907227
+cuda,MBartForCausalLM,16,1.559304,4.144757
+cuda,MBartForConditionalGeneration,8,3.995761,12.170256
+cuda,MT5ForConditionalGeneration,2,3.837805,9.258589
+cuda,MegatronBertForCausalLM,2,3.664741,8.997964
+cuda,MegatronBertForQuestionAnswering,8,3.645005,8.961518
+cuda,MobileBertForQuestionAnswering,32,8.936080,25.052846
+cuda,PegasusForCausalLM,8,1.580158,4.176788
+cuda,PegasusForConditionalGeneration,4,3.863177,10.719087
+cuda,RobertaForCausalLM,4,1.805743,4.238589
+cuda,XGLMForCausalLM,1,2.985098,9.029418

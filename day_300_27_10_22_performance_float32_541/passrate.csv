@@ -1,0 +1,2 @@
+,Compiler,torchbench,huggingface,timm_models
+inductor_no_cudagraphs,inductor_no_cudagraphs,"84%, 47/56","91%, 40/44","95%, 58/61"

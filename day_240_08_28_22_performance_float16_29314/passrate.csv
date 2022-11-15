@@ -1,0 +1,7 @@
+,Compiler,torchbench,huggingface,timm_models
+eager,eager,"82%, 42/51","98%, 43/44","88%, 60/68"
+ts_nvfuser,ts_nvfuser,"75%, 38/51","84%, 37/44","88%, 60/68"
+aot_eager,aot_eager,"78%, 40/51","98%, 43/44","88%, 60/68"
+aot_cudagraphs,aot_cudagraphs,"76%, 39/51","91%, 40/44","84%, 57/68"
+aot_nvfuser,aot_nvfuser,"76%, 39/51","98%, 43/44","78%, 53/68"
+inductor_cudagraphs,inductor_cudagraphs,"69%, 35/51","82%, 36/44","78%, 53/68"

@@ -1,0 +1,8 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert,create_aot_dispatcher_function
+cuda,fbnetc_100,128,3.577130,6.138310
+cuda,gmixer_24_224,64,4.607402,9.290349
+cuda,mixer_b16_224,64,1.959175,3.919974
+cuda,mnasnet_100,128,3.005635,4.837151
+cuda,repvgg_a2,128,3.172131,5.046015
+cuda,resmlp_12_224,128,1.761503,2.896602
+cuda,spnasnet_100,128,3.487756,5.976386

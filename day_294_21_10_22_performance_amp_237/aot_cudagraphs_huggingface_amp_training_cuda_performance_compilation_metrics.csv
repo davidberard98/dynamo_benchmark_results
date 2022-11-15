@@ -1,0 +1,4 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert
+cuda,AllenaiLongformerBase,1,13.679549
+cuda,DebertaForMaskedLM,4,8.418398
+cuda,DebertaForQuestionAnswering,4,8.517297

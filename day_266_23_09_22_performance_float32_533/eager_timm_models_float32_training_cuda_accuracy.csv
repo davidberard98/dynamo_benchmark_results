@@ -1,0 +1,2 @@
+dev,name,batch_size,accuracy
+cuda,inception_v3,2,pass

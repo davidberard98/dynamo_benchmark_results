@@ -1,0 +1,3 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert,create_aot_dispatcher_function
+cuda,resnet18,16,0.548220,0.864570
+cuda,resnet50,32,0.901883,2.401170

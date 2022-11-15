@@ -1,0 +1,3 @@
+,Compiler,huggingface
+aot_eager,aot_eager,0.89x
+inductor,inductor,0.74x

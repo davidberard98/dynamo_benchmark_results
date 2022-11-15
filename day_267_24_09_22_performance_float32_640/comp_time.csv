@@ -1,0 +1,6 @@
+,Compiler,huggingface
+eager,eager,1.88
+aot_eager,aot_eager,7.71
+aot_cudagraphs,aot_cudagraphs,14.08
+aot_nvfuser,aot_nvfuser,9.09
+inductor,inductor,62.28

@@ -1,0 +1,3 @@
+,Compiler,huggingface
+aot_eager,aot_eager,"100%, 44/44"
+inductor,inductor,"93%, 41/44"

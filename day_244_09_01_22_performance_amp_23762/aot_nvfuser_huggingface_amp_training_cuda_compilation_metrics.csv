@@ -1,0 +1,11 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert
+cuda,AlbertForMaskedLM,2,2.325666
+cuda,BigBird,1,10.148655
+cuda,DebertaForQuestionAnswering,4,4.226969
+cuda,MBartForCausalLM,16,2.748621
+cuda,MBartForConditionalGeneration,8,11.715953
+cuda,MegatronBertForCausalLM,2,17.925047
+cuda,MobileBertForQuestionAnswering,32,70.686338
+cuda,RobertaForCausalLM,4,5.520442
+cuda,Speech2Text2ForCausalLM,64,1.357513
+cuda,XGLMForCausalLM,1,7.179831

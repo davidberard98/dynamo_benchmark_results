@@ -1,0 +1,6 @@
+,Compiler,torchbench
+eager,eager,"100%, 2/2"
+aot_eager,aot_eager,"100%, 2/2"
+aot_cudagraphs,aot_cudagraphs,"100%, 2/2"
+aot_nvfuser,aot_nvfuser,"100%, 2/2"
+inductor,inductor,"100%, 2/2"
