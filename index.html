@@ -22,6 +22,10 @@
       const DAY1_DROPDOWN_ID = "dropdown_day1";
       const DAY2_DROPDOWN_ID = "dropdown_day2";
 
+      const DTYPE_DIV = "div_dtype";
+      const DTYPE_DEFAULT_SELECTION = "Select dtype";
+      const DTYPE_DROPDOWN_ID = "dropdown_dtype";
+
       // showDateSelectionDropdown loads this and then stashes it here.
       lookup_csv_global = null;
 
@@ -35,19 +39,25 @@
 
       function parseLookupCsv(msg) {
         data = naiveParseCsv(msg, ",", 4);
-        data = data.map(subarray => ({
-          "day": subarray[0],
-          "metric": subarray[1],
-          "dtype": subarray[2],
-          "path": subarray[3],
-        }));
+        data = data.map(row => ({
+          "day": row[0],
+          "metric": row[1],
+          "dtype": row[2],
+          "path": row[3],
+        })).filter(
+          row => row["metric"] == METRIC && SUPPORTED_DTYPE.includes(row["dtype"])
+        );
         return data;
       }
 
       function areDaysSelected() {
         const id1 = document.getElementById(DAY1_DROPDOWN_ID).selectedIndex;
         const id2 = document.getElementById(DAY2_DROPDOWN_ID).selectedIndex;
-        return (id1 !== 0 && id2 !== 0);
+        return (id1 > 0 && id2 > 0);
+      }
+
+      function showComparisonTable() {
+        console.log("TODO implement table comparison");
       }
 
       function showDtypeSelectionDropdown() {
@@ -57,7 +67,37 @@
         if (!areDaysSelected()) {
           return;
         }
+        const day1 = document.getElementById(DAY1_DROPDOWN_ID).selectedOptions[0].text;
+        const day2 = document.getElementById(DAY2_DROPDOWN_ID).selectedOptions[0].text;
 
+        let parent = document.getElementById(DTYPE_DIV);
+
+        let select = document.createElement("select");
+        let default_option = document.createElement("option");
+        default_option.text = DTYPE_DEFAULT_SELECTION;
+        select.add(default_option);
+
+        // get common dtype options from
+        const day1_dtypes = lookup_csv_global
+                            .filter(row => row["day"] == day1)
+                            .map(row => row["dtype"]);
+        const day2_dtypes = lookup_csv_global
+                            .filter(row => row["day"] == day2)
+                            .map(row => row["dtype"]);
+
+        const available_dtypes = day1_dtypes.filter(dtype => day2_dtypes.includes(dtype));
+        console.log(day1_dtypes, day2_dtypes, available_dtypes);
+
+        for (const dtype of available_dtypes) {
+          console.log(dtype);
+          let dtype_option = document.createElement("option");
+          dtype_option.text = dtype;
+          select.add(dtype_option);
+        }
+
+        select.id = DTYPE_DROPDOWN_ID;
+        select.onchange = showComparisonTable;
+        parent.appendChild(select);
       }
 
       function showDateSelectionDropdowns() {
