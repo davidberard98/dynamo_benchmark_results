@@ -46,7 +46,7 @@
           "compression_ratio": parseFloat(row[6]),
         }),
         "get_name": row => row[1],
-        "data_type": TEXT_DATA,
+        "data_type": NUMERICAL_DATA,
       }
 
       BENCHMARK_SUITES = ["torchbench", "huggingface", "timm"];
@@ -193,10 +193,15 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
               return "#FF2222";
           }
         } else {
-          if (new_value == 0 && old_value != 0) {
+          const new_number = parseFloat(new_value);
+          const old_number = parseFloat(old_value);
+          const isBadNumber = function(num) {
+            return isNaN(num) || num == 0;
+          };
+          if (isBadNumber(new_number) && !isBadNumber(old_number)) {
             return "#FF2222";
           }
-          if (new_value != 0 && old_value == 0) {
+          if (!isBadNumber(new_number) && isBadNumber(old_number)) {
             return "#22FF22";
           }
 
