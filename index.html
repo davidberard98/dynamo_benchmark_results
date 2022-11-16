@@ -10,30 +10,98 @@
       }
     </style>
     <script>
-      function parseCsv(msg) {
-        let as_array = msg.split("\n").map(x => x.split(";"));
-        as_array = as_array.filter(subarray => subarray.length == 3);
-        as_array[0].push("Speedup");
-        for (let i=1; i<as_array.length; ++i) {
-          for (let j=1; j<=2; ++j) {
-            as_array[i][j] = parseFloat(as_array[i][j]);
-          }
-          as_array[i].push(as_array[i][1] / as_array[i][2] - 1);
+      const BASE_URL = "https://raw.githubusercontent.com/davidberard98/dynamo_benchmark_results/master/";
+      const LOOKUP_URL = BASE_URL + "lookup.csv";
+      const METRIC = "performance";
+      const SUPPORTED_DTYPE = ["amp", "float32"];
+
+      const DIV_DAY1 = "div_day1";
+      const DIV_DAY2 = "div_day2";
+      const DAY1_DEFAULT_SELECTION = "Select control day";
+      const DAY2_DEFAULT_SELECTION = "Select test day";
+      const DAY1_DROPDOWN_ID = "dropdown_day1";
+      const DAY2_DROPDOWN_ID = "dropdown_day2";
+
+      // showDateSelectionDropdown loads this and then stashes it here.
+      lookup_csv_global = null;
+
+      function naiveParseCsv(msg, delimiter=",", expected_cols=null) {
+        let as_array = msg.split("\n").map(x => x.split(delimiter));
+        if (expected_cols !== null) {
+          as_array = as_array.filter(subarray => subarray.length == expected_cols);
         }
         return as_array;
       }
 
-      function setDataMessage(msg) {
-        const dataElement = document.getElementById("data");
-        dataElement.appendChild(
-          document.createTextNode(msg)
-        );
+      function parseLookupCsv(msg) {
+        data = naiveParseCsv(msg, ",", 4);
+        data = data.map(subarray => ({
+          "day": subarray[0],
+          "metric": subarray[1],
+          "dtype": subarray[2],
+          "path": subarray[3],
+        }));
+        return data;
       }
 
-      function loadTableFromUrl(url) {
-        fetch(url)
-          .then(
-            async function(response) {
+      function areDaysSelected() {
+        const id1 = document.getElementById(DAY1_DROPDOWN_ID).selectedIndex;
+        const id2 = document.getElementById(DAY2_DROPDOWN_ID).selectedIndex;
+        return (id1 !== 0 && id2 !== 0);
+      }
+
+      function showDtypeSelectionDropdown() {
+        if (lookup_csv_global === null) {
+          console.error("lookup_csv_global is null");
+        }
+        if (!areDaysSelected()) {
+          return;
+        }
+
+      }
+
+      function showDateSelectionDropdowns() {
+        fetch(LOOKUP_URL)
+          .then(async function(response) {
+            const text = await response.text();
+            let data = parseLookupCsv(text);
+
+            // stash the csv data globally for later use
+            lookup_csv_global = data;
+
+            let unique_days = [...new Set(data.map(x => x["day"]))].reverse();
+            console.log(data);
+            console.log(unique_days);
+            const create_dropdown = function(parent_id, dropdown_id, default_text) {
+              let parent = document.getElementById(parent_id);
+
+              let select = document.createElement("select");
+              let default_option = document.createElement("option");
+              default_option.text = default_text;
+              select.add(default_option);
+              for (const day of unique_days) {
+                let option = document.createElement("option");
+                option.text = day;
+                select.add(option);
+              }
+              select.id = dropdown_id;
+
+              select.onchange = showDtypeSelectionDropdown;
+
+              parent.appendChild(select);
+            };
+
+            create_dropdown(DIV_DAY1, DAY1_DROPDOWN_ID, DAY1_DEFAULT_SELECTION);
+            create_dropdown(DIV_DAY2, DAY2_DROPDOWN_ID, DAY2_DEFAULT_SELECTION);
+          })
+      }
+
+      function run() {
+        showDateSelectionDropdowns();
+      }
+
+      /*
+      async function(response) {
               const text = await response.text();
               as_csv = parseCsv(text);
               let min_speedup = Math.min(...as_csv.slice(1).map(subarr => subarr[3]));
@@ -78,25 +146,20 @@
                 }
               }
             });
-      }
+      */
 
-      window.onload = async function() {
-        const searchParams = (new URL(document.location)).searchParams;
-        if (!searchParams.has("url")) {
-          console.log("!has_url")
-          setDataMessage("No URL provided (e.g. ?url=[...])")
-          return;
-        }
-        const url = searchParams.get("url");
-        document.getElementsByTagName("h1")[0].innerHTML = "Results from " + url;
-        setDataMessage("Loading from " + url);
-        loadTableFromUrl(url);
-
-      };
+      window.onload = run;
     </script>
   </head>
   <body>
-    <h1>Hello World</h1>
-    <div id="data"></div>
+    <h1>Torchbench metric diff tool</h1>
+    <div style="width: 500px;">
+      <div style="width:240px; float: left" id="div_day1"></div>
+      <div style="width:240px; float: right" id="div_day2"></div>
+    </div>
+    <br />
+    <div id="div_dtype"></div>
+    <br />
+    <div id="div_table"></div>
   </body>
 </html>
