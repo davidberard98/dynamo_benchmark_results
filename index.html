@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <style>
+      .bordered_table {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 3px;
+      }
+    </style>
+    <script>
+      function parseCsv(msg) {
+        let as_array = msg.split("\n").map(x => x.split(";"));
+        as_array = as_array.filter(subarray => subarray.length == 3);
+        as_array[0].push("Speedup");
+        for (let i=1; i<as_array.length; ++i) {
+          for (let j=1; j<=2; ++j) {
+            as_array[i][j] = parseFloat(as_array[i][j]);
+          }
+          as_array[i].push(as_array[i][1] / as_array[i][2] - 1);
+        }
+        return as_array;
+      }
+
+      function setDataMessage(msg) {
+        const dataElement = document.getElementById("data");
+        dataElement.appendChild(
+          document.createTextNode(msg)
+        );
+      }
+
+      function loadTableFromUrl(url) {
+        fetch(url)
+          .then(
+            async function(response) {
+              const text = await response.text();
+              as_csv = parseCsv(text);
+              let min_speedup = Math.min(...as_csv.slice(1).map(subarr => subarr[3]));
+              console.log(as_csv.slice(1).map(subarr => subarr[3]))
+              min_speedup = Math.min(min_speedup, 0.0)
+              let max_speedup = Math.max(...as_csv.slice(1).map(subarr => subarr[3]));
+              max_speedup = Math.max(max_speedup, 0.0)
+              console.log("!! ", min_speedup, max_speedup)
+              const dataElement = document.getElementById("data");
+              dataElement.innerHTML = "";
+              const tableElement = document.createElement("table");
+              tableElement.classList.add("bordered_table");
+              dataElement.appendChild(tableElement);
+              for (let i=0; i<as_csv.length; ++i) {
+                const row = as_csv[i];
+                const tr = document.createElement("tr");
+                tr.classList.add("bordered_table");
+                tableElement.appendChild(tr);
+                for (let j=0; j < row.length; ++j) {
+                  let td_type = (i == 0 ? "th" : "td");
+                  const td = document.createElement(td_type);
+                  td.classList.add("bordered_table");
+                  tr.appendChild(td);
+                  let text = row[j].toString();
+                  if (j == 3 && typeof row[j] === 'number') {
+                    text = (row[j] * 100).toFixed(2) + "%";
+                  }
+                  td.appendChild(document.createTextNode(text));
+                  if (j == 3 && typeof row[3] === 'number') {
+                    if (row[3] > 0) {
+                      const ratio = row[3] / max_speedup;
+                      const otherColor = parseInt(255 * (1 - ratio)).toString();
+                      td.style.backgroundColor = "rgb(" + otherColor + ", 255, " + otherColor + ")";
+                      console.log(td.style.backgroundColor);
+                    } else if (row[3] < 0) {
+                      const ratio = row[3] / min_speedup;
+                      const otherColor = parseInt(255 * (1 - ratio)).toString();
+                      td.style.backgroundColor = "rgb(255, " + otherColor + ", " + otherColor + ")";
+                      console.log(td.style.backgroundColor);
+                    }
+                  }
+                }
+              }
+            });
+      }
+
+      window.onload = async function() {
+        const searchParams = (new URL(document.location)).searchParams;
+        if (!searchParams.has("url")) {
+          console.log("!has_url")
+          setDataMessage("No URL provided (e.g. ?url=[...])")
+          return;
+        }
+        const url = searchParams.get("url");
+        document.getElementsByTagName("h1")[0].innerHTML = "Results from " + url;
+        setDataMessage("Loading from " + url);
+        loadTableFromUrl(url);
+
+      };
+    </script>
+  </head>
+  <body>
+    <h1>Hello World</h1>
+    <div id="data"></div>
+  </body>
+</html>
