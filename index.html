@@ -3,7 +3,7 @@
   <head>
     <title></title>
     <style>
-      .bordered_table {
+      table, tr, td, th {
         border: 1px solid black;
         border-collapse: collapse;
         padding: 3px;
@@ -25,6 +25,97 @@
       const DTYPE_DIV = "div_dtype";
       const DTYPE_DEFAULT_SELECTION = "Select dtype";
       const DTYPE_DROPDOWN_ID = "dropdown_dtype";
+
+      const TABLES_DIV = "div_tables";
+
+      const TEXT_DATA = "text";
+      const NUMERICAL_DATA = "numerical";
+
+      const ACCURACY_CONFIG = {
+        "columns": 4,
+        "get_results": row => ({"accuracy": row[3]}),
+        "get_name": row => row[1],
+        "data_type": TEXT_DATA,
+      };
+      const PERFORMANCE_CONFIG = {
+        "columns": 7,
+        "get_results": row => ({
+          "speedup": parseFloat(row[3]),
+          "abs_latency": parseFloat(row[4]),
+          "compilation_latency": parseFloat(row[5]),
+          "compression_ratio": parseFloat(row[6]),
+        }),
+        "get_name": row => row[1],
+        "data_type": TEXT_DATA,
+      }
+
+      BENCHMARK_SUITES = ["torchbench", "huggingface", "timm"];
+      BACKENDS = ["eager", "inductor", "inductor_no_cudagraphs"];
+      CONFIGS = {"accuracy": ACCURACY_CONFIG, "performance": PERFORMANCE_CONFIG};
+
+      const DATA_FILES = [
+/*
+IGNORED FILES:
+comp_time.csv
+geomean.csv
+memory.csv
+passrate.csv
+aot_cudagraphs_huggingface_amp_training_cuda_accuracy.csv
+aot_cudagraphs_huggingface_amp_training_cuda_performance.csv
+aot_cudagraphs_huggingface_amp_training_cuda_performance_compilation_metrics.csv
+aot_cudagraphs_timm_models_amp_training_cuda_accuracy.csv
+aot_cudagraphs_timm_models_amp_training_cuda_performance.csv
+aot_cudagraphs_timm_models_amp_training_cuda_performance_compilation_metrics.csv
+aot_cudagraphs_torchbench_amp_training_cuda_accuracy.csv
+aot_cudagraphs_torchbench_amp_training_cuda_performance.csv
+aot_cudagraphs_torchbench_amp_training_cuda_performance_compilation_metrics.csv
+aot_eager_huggingface_amp_training_cuda_accuracy.csv
+aot_eager_huggingface_amp_training_cuda_performance.csv
+aot_eager_huggingface_amp_training_cuda_performance_compilation_metrics.csv
+aot_eager_timm_models_amp_training_cuda_accuracy.csv
+aot_eager_timm_models_amp_training_cuda_performance.csv
+aot_eager_timm_models_amp_training_cuda_performance_compilation_metrics.csv
+aot_eager_torchbench_amp_training_cuda_accuracy.csv
+aot_eager_torchbench_amp_training_cuda_performance.csv
+aot_eager_torchbench_amp_training_cuda_performance_compilation_metrics.csv
+nvprims_nvfuser_huggingface_amp_training_cuda_accuracy.csv
+nvprims_nvfuser_huggingface_amp_training_cuda_performance.csv
+nvprims_nvfuser_huggingface_amp_training_cuda_performance_compilation_metrics.csv
+nvprims_nvfuser_timm_models_amp_training_cuda_accuracy.csv
+nvprims_nvfuser_timm_models_amp_training_cuda_performance.csv
+nvprims_nvfuser_timm_models_amp_training_cuda_performance_compilation_metrics.csv
+nvprims_nvfuser_torchbench_amp_training_cuda_accuracy.csv
+nvprims_nvfuser_torchbench_amp_training_cuda_performance.csv
+nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
+*/
+        "eager_huggingface_{}_training_cuda_accuracy.csv",
+        "eager_huggingface_{}_training_cuda_performance.csv",
+        //"eager_huggingface_{}_training_cuda_performance_compilation_metrics.csv",
+        "eager_timm_models_{}_training_cuda_accuracy.csv",
+        "eager_timm_models_{}_training_cuda_performance.csv",
+        //"eager_timm_models_{}_training_cuda_performance_compilation_metrics.csv",
+        "eager_torchbench_{}_training_cuda_accuracy.csv",
+        "eager_torchbench_{}_training_cuda_performance.csv",
+        //"eager_torchbench_{}_training_cuda_performance_compilation_metrics.csv",
+        "inductor_huggingface_{}_training_cuda_accuracy.csv",
+        "inductor_huggingface_{}_training_cuda_performance.csv",
+        //"inductor_huggingface_{}_training_cuda_performance_compilation_metrics.csv",
+        "inductor_no_cudagraphs_huggingface_{}_training_cuda_accuracy.csv",
+        "inductor_no_cudagraphs_huggingface_{}_training_cuda_performance.csv",
+        //"inductor_no_cudagraphs_huggingface_{}_training_cuda_performance_compilation_metrics.csv",
+        "inductor_no_cudagraphs_timm_models_{}_training_cuda_accuracy.csv",
+        "inductor_no_cudagraphs_timm_models_{}_training_cuda_performance.csv",
+        //"inductor_no_cudagraphs_timm_models_{}_training_cuda_performance_compilation_metrics.csv",
+        "inductor_no_cudagraphs_torchbench_{}_training_cuda_accuracy.csv",
+        "inductor_no_cudagraphs_torchbench_{}_training_cuda_performance.csv",
+        //"inductor_no_cudagraphs_torchbench_{}_training_cuda_performance_compilation_metrics.csv",
+        "inductor_timm_models_{}_training_cuda_accuracy.csv",
+        "inductor_timm_models_{}_training_cuda_performance.csv",
+        //"inductor_timm_models_{}_training_cuda_performance_compilation_metrics.csv",
+        "inductor_torchbench_{}_training_cuda_accuracy.csv",
+        "inductor_torchbench_{}_training_cuda_performance.csv",
+        //"inductor_torchbench_{}_training_cuda_performance_compilation_metrics.csv",
+      ];
 
       // showDateSelectionDropdown loads this and then stashes it here.
       lookup_csv_global = null;
@@ -56,26 +147,221 @@
         return (id1 > 0 && id2 > 0);
       }
 
+      function getDaySelections() {
+        let day1 = null;
+        let day2 = null;
+        if (document.getElementById(DAY1_DROPDOWN_ID).selectedIndex > 0) {
+          day1 = document.getElementById(DAY1_DROPDOWN_ID).selectedOptions[0].text;
+        }
+
+        if (document.getElementById(DAY2_DROPDOWN_ID).selectedIndex > 0) {
+          day2 = document.getElementById(DAY2_DROPDOWN_ID).selectedOptions[0].text;
+        }
+        return [day1, day2];
+      }
+
+      function colorResults(
+        data_type,
+        old_value,
+        new_value,
+      ) {
+        if (data_type == TEXT_DATA) {
+          const mapping = function(x) {
+            const result_order = {
+              "pass": 0,
+              "fail_accuracy": 1,
+              "fail_to_run": 2,
+            };
+            if (result_order[x] === undefined) {
+              return 2;
+            }
+            return result_order[x];
+          }
+
+          const old_order = mapping(old_value);
+          const new_order = mapping(new_value);
+
+          const diff = new_order - old_order;
+          switch (diff) {
+            case -2: case -1:
+              return "#22FF22";
+            case 0:
+              return "#FFFFFF";
+            case 1:
+              return "#FFFF22";
+            case 2:
+              return "#FF2222";
+          }
+        } else {
+          if (new_value == 0 && old_value != 0) {
+            return "#FF2222";
+          }
+          if (new_value != 0 && old_value == 0) {
+            return "#22FF22";
+          }
+
+          // TODO gradients
+          return "#FFFFFF";
+        }
+      }
+
+      function buildTable(
+        suite,
+        config_name,
+        backend,
+        data_type,
+        data, // expect {"model": .., "metric_name": .., "new_value": .., "old_value": ..}
+      ) {
+        let table = document.createElement("table");
+        let header_row = document.createElement("tr");
+        table.appendChild(header_row);
+        ["suite", "config", "backend", "model", "metric", "old value", "new_value"].forEach(function(name) {
+          let th = document.createElement("th");
+          th.appendChild(document.createTextNode(name));
+          header_row.appendChild(th);
+        });
+
+        for (const row of data) {
+          let data_row = document.createElement("tr");
+          table.appendChild(data_row);
+          [
+            suite,
+            config_name,
+            backend,
+            row["model"],
+            row["metric"],
+            row["old_value"],
+            row["new_value"],
+          ].forEach(function(datapoint) {
+            let td = document.createElement("td");
+            td.appendChild(document.createTextNode(datapoint));
+            data_row.appendChild(td);
+          })
+          data_row.lastChild.style.backgroundColor = colorResults(data_type, row["old_value"], row["new_value"]);
+        }
+
+        return table;
+      }
+
       function showComparisonTable() {
-        console.log("TODO implement table comparison");
+        let parent = document.getElementById(TABLES_DIV);
+        parent.innerHTML = "";
+
+        let day_selection = null;
+        if (document.getElementById(DTYPE_DROPDOWN_ID).selectedIndex <= 0) {
+          return;
+        }
+        let dtype = document.getElementById(DTYPE_DROPDOWN_ID).selectedOptions[0].text;
+
+        let [day1, day2] = getDaySelections();
+
+        // get common dtype options from
+        const day1_rows = lookup_csv_global
+                            .filter(row => row["day"] == day1 && row["dtype"] == dtype);
+        const day2_rows = lookup_csv_global
+                            .filter(row => row["day"] == day2 && row["dtype"] == dtype);
+
+        if (day1_rows.length < 1 || day2_rows.length < 1) {
+          console.error("didn't find a row in lookup.csv for this configuration of day & dtype");
+        }
+
+        const day1_url = BASE_URL + day1_rows[0]["path"] + "/";
+        const day2_url = BASE_URL + day2_rows[0]["path"] + "/";
+
+        let results = {};
+        for (const fname of DATA_FILES) {
+          results[fname] = {};
+        }
+
+        promises = [];
+        DATA_FILES.forEach(function(fname) {
+          const fname_with_dtype = fname.replace("{}", dtype);
+          promises.push(
+            fetch(day1_url + fname_with_dtype).then(async function(res) {
+              results[fname]["day1"] = await res.text();
+            })
+          );
+          promises.push(
+            fetch(day2_url + fname_with_dtype).then(async function(res) {
+              results[fname]["day2"] = await res.text();
+            })
+          );
+        });
+
+        Promise.all(promises)
+          .then(function() {
+            for (const fname of DATA_FILES) {
+              let suite = BENCHMARK_SUITES.filter(suite => fname.includes(suite))[0];
+              let config_type = Object.keys(CONFIGS).filter(cfg => fname.includes(cfg))[0];
+              let backend = BACKENDS.filter(b => fname.includes(b))[0];
+
+              let config = CONFIGS[config_type];
+
+              const parseRawData = function(raw_data) {
+                return Object.fromEntries(
+                  naiveParseCsv(raw_data, ",", config["columns"])
+                    .slice(1)
+                    .map(row => [
+                      config["get_name"](row),
+                      config["get_results"](row),
+                    ])
+                );
+              }
+
+              const map1 = parseRawData(results[fname]["day1"]);
+              const map2 = parseRawData(results[fname]["day2"]);
+
+              let data = [];
+              for (const model of Object.keys(map1)) {
+                let res1 = map1[model];
+                let res2 = map2[model];
+                if (res2 === undefined) {
+                  res2 = {}
+                }
+                let metrics = new Set([...Object.keys(res1), ...Object.keys(res2)]);
+                for (const metric of metrics) {
+                  let [val1, val2] = [res1, res2]
+                    .map(x => (x[metric] === undefined ? 0.0 : x[metric]));
+                  data.push({
+                    "model": model,
+                    "metric": metric,
+                    "old_value": val1,
+                    "new_value": val2,
+                  });
+                }
+              }
+
+              let table = buildTable(
+                suite,
+                config_type,
+                backend,
+                config["data_type"],
+                data);
+
+              parent.appendChild(table);
+              parent.appendChild(document.createElement("br"));
+              parent.appendChild(document.createElement("br"));
+
+            }
+          });
       }
 
       function showDtypeSelectionDropdown() {
+        let parent = document.getElementById(DTYPE_DIV);
+        parent.innerHTML = "";
         if (lookup_csv_global === null) {
           console.error("lookup_csv_global is null");
         }
         if (!areDaysSelected()) {
           return;
         }
-        const day1 = document.getElementById(DAY1_DROPDOWN_ID).selectedOptions[0].text;
-        const day2 = document.getElementById(DAY2_DROPDOWN_ID).selectedOptions[0].text;
-
-        let parent = document.getElementById(DTYPE_DIV);
 
         let select = document.createElement("select");
         let default_option = document.createElement("option");
         default_option.text = DTYPE_DEFAULT_SELECTION;
         select.add(default_option);
+
+        [day1, day2] = getDaySelections();
 
         // get common dtype options from
         const day1_dtypes = lookup_csv_global
@@ -200,6 +486,6 @@
     <br />
     <div id="div_dtype"></div>
     <br />
-    <div id="div_table"></div>
+    <div id="div_tables"></div>
   </body>
 </html>
