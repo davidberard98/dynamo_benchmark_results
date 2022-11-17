@@ -31,6 +31,8 @@
       const TEXT_DATA = "text";
       const NUMERICAL_DATA = "numerical";
 
+      const CURRENT_YEAR = 2022;
+
       const ACCURACY_CONFIG = {
         "columns": 4,
         "get_results": row => ({"accuracy": row[3]}),
@@ -151,11 +153,11 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         let day1 = null;
         let day2 = null;
         if (document.getElementById(DAY1_DROPDOWN_ID).selectedIndex > 0) {
-          day1 = document.getElementById(DAY1_DROPDOWN_ID).selectedOptions[0].text;
+          day1 = document.getElementById(DAY1_DROPDOWN_ID).selectedOptions[0].value;
         }
 
         if (document.getElementById(DAY2_DROPDOWN_ID).selectedIndex > 0) {
-          day2 = document.getElementById(DAY2_DROPDOWN_ID).selectedOptions[0].text;
+          day2 = document.getElementById(DAY2_DROPDOWN_ID).selectedOptions[0].value;
         }
         return [day1, day2];
       }
@@ -256,7 +258,7 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         if (document.getElementById(DTYPE_DROPDOWN_ID).selectedIndex <= 0) {
           return;
         }
-        let dtype = document.getElementById(DTYPE_DROPDOWN_ID).selectedOptions[0].text;
+        let dtype = document.getElementById(DTYPE_DROPDOWN_ID).selectedOptions[0].value;
 
         let [day1, day2] = getDaySelections();
 
@@ -382,7 +384,7 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         for (const dtype of available_dtypes) {
           console.log(dtype);
           let dtype_option = document.createElement("option");
-          dtype_option.text = dtype;
+          dtype_option.text = dtype_option.value = dtype;
           select.add(dtype_option);
         }
 
@@ -412,7 +414,8 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
               select.add(default_option);
               for (const day of unique_days) {
                 let option = document.createElement("option");
-                option.text = day;
+                option.value = day;
+                option.text = new Date(CURRENT_YEAR, 0, day).toISOString().split("T")[0];
                 select.add(option);
               }
               select.id = dropdown_id;
