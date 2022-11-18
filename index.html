@@ -338,14 +338,10 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
           const otherColor = Math.floor(MAX_BRIGHTNESS - 200 * (abs_diff / MAX_DIFF)).toString();
           let full_color = `rgb(${MAX_BRIGHTNESS}, ${MAX_BRIGHTNESS}, ${MAX_BRIGHTNESS})`;
           if (diff > 0) {
-            console.log("GREEN!!");
             full_color = `rgb(${otherColor}, ${MAX_BRIGHTNESS}, ${otherColor})`;
           } else {
-            console.log("RED!!");
             full_color = `rgb(${MAX_BRIGHTNESS}, ${otherColor}, ${otherColor})`;
           }
-
-          console.log(full_color);
 
           return full_color;
         } else {
