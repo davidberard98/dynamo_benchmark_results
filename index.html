@@ -308,6 +308,46 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
             case 2:
               return "#FF2222";
           }
+        } else if (data_type == RATIO_DATA) {
+          const parseRatio = function(str_val) {
+            [num, den] = str_val.split("/").map(x => parseFloat(x));
+            return num/den;
+          };
+
+          const [old_ratio, new_ratio] = [old_value, new_value].map(x => parseRatio(x));
+
+          const clamp = function(x, min_val, max_val) {
+            if (x < min_val) {
+              return min_val;
+            }
+            if (x > max_val) {
+              return max_val;
+            }
+            return x;
+          };
+
+          const MAX_DIFF = 0.1;
+          const MIN_VAL = 1 - MAX_DIFF;
+          const MAX_VAL = 1 + MAX_DIFF;
+          const MAX_BRIGHTNESS = 255;
+          const display_ratio = clamp(new_ratio / old_ratio, MIN_VAL, MAX_VAL);
+
+          const diff = display_ratio-1;
+          const abs_diff = diff > 0 ? diff : -diff;
+
+          const otherColor = Math.floor(MAX_BRIGHTNESS - 200 * (abs_diff / MAX_DIFF)).toString();
+          let full_color = `rgb(${MAX_BRIGHTNESS}, ${MAX_BRIGHTNESS}, ${MAX_BRIGHTNESS})`;
+          if (diff > 0) {
+            console.log("GREEN!!");
+            full_color = `rgb(${otherColor}, ${MAX_BRIGHTNESS}, ${otherColor})`;
+          } else {
+            console.log("RED!!");
+            full_color = `rgb(${MAX_BRIGHTNESS}, ${otherColor}, ${otherColor})`;
+          }
+
+          console.log(full_color);
+
+          return full_color;
         } else {
           const new_number = parseFloat(new_value);
           const old_number = parseFloat(old_value);
@@ -441,11 +481,9 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
               const map2 = parseRawData(results[fname]["day2"]);
 
               let data = [];
-              console.log(map1);
               for (const model of Object.keys(map1)) {
                 let res1 = map1[model];
                 let res2 = map2[model];
-                console.log(res1, res2);
                 if (res2 === undefined) {
                   res2 = {}
                 }
