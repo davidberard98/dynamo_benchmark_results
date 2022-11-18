@@ -1,0 +1,4 @@
+,Compiler,huggingface
+eager,eager,1.00x
+inductor,inductor,0.92x
+inductor_no_cudagraphs,inductor_no_cudagraphs,1.07x

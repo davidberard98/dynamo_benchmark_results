@@ -1,0 +1,15 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert
+cuda,DistilBertForMaskedLM,64,1.319098
+cuda,DistilBertForQuestionAnswering,64,1.361673
+cuda,GPT2ForSequenceClassification,4,2.597977
+cuda,M2M100ForConditionalGeneration,8,7.511040
+cuda,MBartForCausalLM,32,2.420152
+cuda,MBartForConditionalGeneration,16,6.256046
+cuda,MT5ForConditionalGeneration,8,5.178494
+cuda,OPTForCausalLM,32,2.474944
+cuda,PLBartForCausalLM,32,1.335763
+cuda,PegasusForCausalLM,32,2.433332
+cuda,PegasusForConditionalGeneration,16,7.173509
+cuda,Speech2Text2ForCausalLM,128,1.382413
+cuda,T5ForConditionalGeneration,4,3.562275
+cuda,T5Small,1,3.670972
