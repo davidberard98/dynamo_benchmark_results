@@ -49,6 +49,7 @@
 
       const TEXT_DATA = "text";
       const NUMERICAL_DATA = "numerical";
+      const RATIO_DATA = "ratio";
 
       const CURRENT_YEAR = 2022;
 
@@ -60,19 +61,51 @@
       };
       const PERFORMANCE_CONFIG = {
         "columns": 7,
+        "get_results": function(row) {
+          return ({
+            "speedup": parseFloat(row[3]),
+            "abs_latency": parseFloat(row[4]),
+            "compilation_latency": parseFloat(row[5]),
+            "compression_ratio": parseFloat(row[6]),
+          })
+        },
+        "get_name": row => row[1],
+        "data_type": NUMERICAL_DATA,
+      };
+      const splitRatio = function(full_data) {
+        return full_data.split(", ")[1]
+      };
+      const PASSRATE_CONFIG = {
+        "columns": 5,
+        "get_results": function(row) {
+          return ({
+            "torchbench": splitRatio(row[2]),
+            "huggingface": splitRatio(row[3]),
+            "timm_models": splitRatio(row[4]),
+          })
+        },
+        "get_name": row => row[1],
+        "data_type": RATIO_DATA,
+      };
+      const GEOMEAN_CONFIG = {
+        "columns": 5,
         "get_results": row => ({
-          "speedup": parseFloat(row[3]),
-          "abs_latency": parseFloat(row[4]),
-          "compilation_latency": parseFloat(row[5]),
-          "compression_ratio": parseFloat(row[6]),
+          "torchbench": row[2],
+          "huggingface": row[3],
+          "timm_models": row[4],
         }),
         "get_name": row => row[1],
         "data_type": NUMERICAL_DATA,
-      }
+      };
 
       BENCHMARK_SUITES = ["torchbench", "huggingface", "timm"];
       BACKENDS = ["eager", "inductor", "inductor_no_cudagraphs"];
-      CONFIGS = {"accuracy": ACCURACY_CONFIG, "performance": PERFORMANCE_CONFIG};
+      CONFIGS = {
+        "accuracy": ACCURACY_CONFIG,
+        "performance": PERFORMANCE_CONFIG,
+        "passrate": PASSRATE_CONFIG,
+        "geomean": GEOMEAN_CONFIG
+      };
 
       const DATA_FILES = [
 /*
@@ -109,6 +142,8 @@ nvprims_nvfuser_torchbench_amp_training_cuda_accuracy.csv
 nvprims_nvfuser_torchbench_amp_training_cuda_performance.csv
 nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
 */
+        "passrate.csv",
+        "geomean.csv",
         "eager_huggingface_{}_training_cuda_accuracy.csv",
         "eager_huggingface_{}_training_cuda_performance.csv",
         //"eager_huggingface_{}_training_cuda_performance_compilation_metrics.csv",
@@ -141,11 +176,64 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
       // showDateSelectionDropdown loads this and then stashes it here.
       lookup_csv_global = null;
 
+      /*
       function naiveParseCsv(msg, delimiter=",", expected_cols=null) {
         let as_array = msg.split("\n").map(x => x.split(delimiter));
         if (expected_cols !== null) {
           as_array = as_array.filter(subarray => subarray.length == expected_cols);
         }
+        return as_array;
+      }
+      */
+
+      function naiveParseCsv(msg, delimiter=",", expected_cols=null) {
+        const as_array = msg
+          .split("\n")
+          .map(function(row) {
+            let cur = "";
+            let quote_level = 0;
+            let ret = [];
+            for (const c of row) {
+              if (quote_level == 0) {
+                if (quote_level == 0 && c == '"') {
+                  quote_level = 1;
+                } else if (quote_level == 0 && c == delimiter) {
+                  quote_level = 0;
+                  ret.push(cur);
+                  cur = "";
+                } else {
+                  cur += c;
+                }
+              } else if (quote_level == 1) {
+                if (c == '"') {
+                  cur += c;
+                  quote_level = 2;
+                } else {
+                  cur += c;
+                }
+              } else if (quote_level == 2) {
+                if (c == '"') {
+                  // just an escaped quote
+                  quote_level = 1;
+                } else if (c == delimiter) {
+                  quote_level = 0;
+                  cur = cur.slice(0, cur.length-1);
+                  ret.push(cur);
+                  cur = "";
+                } else {
+                  console.error("Bad csv file");
+                }
+              }
+            }
+            if (quote_level == 2) {
+              cur = cur.slice(0, cur.length-1);
+            }
+            ret.push(cur);
+
+            return ret;
+          }).filter(
+            x => x.length > 0 && x[0].length > 0
+          );
         return as_array;
       }
 
@@ -326,6 +414,12 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         Promise.all(promises)
           .then(function() {
             for (const fname of DATA_FILES) {
+              const firstElement = function(iterable) {
+                if (iterable.length > 0) {
+                  return iterable[0];
+                }
+                return undefined;
+              };
               let suite = BENCHMARK_SUITES.filter(suite => fname.includes(suite))[0];
               let config_type = Object.keys(CONFIGS).filter(cfg => fname.includes(cfg))[0];
               let backend = BACKENDS.filter(b => fname.includes(b))[0];
@@ -347,9 +441,11 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
               const map2 = parseRawData(results[fname]["day2"]);
 
               let data = [];
+              console.log(map1);
               for (const model of Object.keys(map1)) {
                 let res1 = map1[model];
                 let res2 = map2[model];
+                console.log(res1, res2);
                 if (res2 === undefined) {
                   res2 = {}
                 }
@@ -373,6 +469,9 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
                 config["data_type"],
                 data);
 
+              let title = document.createElement("h3");
+              title.appendChild(document.createTextNode(fname.replace("{}", dtype)));
+              parent.appendChild(title);
               parent.appendChild(table);
               parent.appendChild(document.createElement("br"));
               parent.appendChild(document.createElement("br"));
