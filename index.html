@@ -434,54 +434,6 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         showDateSelectionDropdowns();
       }
 
-      /*
-      async function(response) {
-              const text = await response.text();
-              as_csv = parseCsv(text);
-              let min_speedup = Math.min(...as_csv.slice(1).map(subarr => subarr[3]));
-              console.log(as_csv.slice(1).map(subarr => subarr[3]))
-              min_speedup = Math.min(min_speedup, 0.0)
-              let max_speedup = Math.max(...as_csv.slice(1).map(subarr => subarr[3]));
-              max_speedup = Math.max(max_speedup, 0.0)
-              console.log("!! ", min_speedup, max_speedup)
-              const dataElement = document.getElementById("data");
-              dataElement.innerHTML = "";
-              const tableElement = document.createElement("table");
-              tableElement.classList.add("bordered_table");
-              dataElement.appendChild(tableElement);
-              for (let i=0; i<as_csv.length; ++i) {
-                const row = as_csv[i];
-                const tr = document.createElement("tr");
-                tr.classList.add("bordered_table");
-                tableElement.appendChild(tr);
-                for (let j=0; j < row.length; ++j) {
-                  let td_type = (i == 0 ? "th" : "td");
-                  const td = document.createElement(td_type);
-                  td.classList.add("bordered_table");
-                  tr.appendChild(td);
-                  let text = row[j].toString();
-                  if (j == 3 && typeof row[j] === 'number') {
-                    text = (row[j] * 100).toFixed(2) + "%";
-                  }
-                  td.appendChild(document.createTextNode(text));
-                  if (j == 3 && typeof row[3] === 'number') {
-                    if (row[3] > 0) {
-                      const ratio = row[3] / max_speedup;
-                      const otherColor = parseInt(255 * (1 - ratio)).toString();
-                      td.style.backgroundColor = "rgb(" + otherColor + ", 255, " + otherColor + ")";
-                      console.log(td.style.backgroundColor);
-                    } else if (row[3] < 0) {
-                      const ratio = row[3] / min_speedup;
-                      const otherColor = parseInt(255 * (1 - ratio)).toString();
-                      td.style.backgroundColor = "rgb(255, " + otherColor + ", " + otherColor + ")";
-                      console.log(td.style.backgroundColor);
-                    }
-                  }
-                }
-              }
-            });
-      */
-
       window.onload = run;
     </script>
   </head>
