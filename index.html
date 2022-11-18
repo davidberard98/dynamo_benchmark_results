@@ -8,6 +8,25 @@
         border-collapse: collapse;
         padding: 3px;
       }
+      #dataset_container {
+        width: 500px;
+      }
+      #div_day1 {
+        width: 240px;
+        float: left;
+      }
+      #div_day2 {
+        width: 240px;
+        float: right;
+      }
+      #div_day1 select {
+        max-width: 230px;
+        float: left;
+      }
+      #div_day2 select {
+        max-width: 230px;
+        float: right;
+      }
     </style>
     <script>
       const BASE_URL = "https://raw.githubusercontent.com/davidberard98/dynamo_benchmark_results/master/";
@@ -17,8 +36,8 @@
 
       const DIV_DAY1 = "div_day1";
       const DIV_DAY2 = "div_day2";
-      const DAY1_DEFAULT_SELECTION = "Select control day";
-      const DAY2_DEFAULT_SELECTION = "Select test day";
+      const DAY1_DEFAULT_SELECTION = "Select control dataset";
+      const DAY2_DEFAULT_SELECTION = "Select test dataset";
       const DAY1_DROPDOWN_ID = "dropdown_day1";
       const DAY2_DROPDOWN_ID = "dropdown_day2";
 
@@ -162,6 +181,13 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         return [day1, day2];
       }
 
+      function getDtypeSelection() {
+        if (document.getElementById(DTYPE_DROPDOWN_ID).selectedIndex > 0) {
+          return document.getElementById(DTYPE_DROPDOWN_ID).selectedOptions[0].value;
+        }
+        return null;
+      }
+
       function colorResults(
         data_type,
         old_value,
@@ -255,18 +281,20 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         parent.innerHTML = "";
 
         let day_selection = null;
-        if (document.getElementById(DTYPE_DROPDOWN_ID).selectedIndex <= 0) {
+        let dtype = getDtypeSelection();
+        if (dtype === null) {
           return;
         }
-        let dtype = document.getElementById(DTYPE_DROPDOWN_ID).selectedOptions[0].value;
-
         let [day1, day2] = getDaySelections();
+        if (day1 === null || day2 === null) {
+          return;
+        }
 
         // get common dtype options from
         const day1_rows = lookup_csv_global
-                            .filter(row => row["day"] == day1 && row["dtype"] == dtype);
+                            .filter(row => row["path"] == day1 && row["dtype"] == dtype);
         const day2_rows = lookup_csv_global
-                            .filter(row => row["day"] == day2 && row["dtype"] == dtype);
+                            .filter(row => row["path"] == day2 && row["dtype"] == dtype);
 
         if (day1_rows.length < 1 || day2_rows.length < 1) {
           console.error("didn't find a row in lookup.csv for this configuration of day & dtype");
@@ -430,8 +458,81 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
           })
       }
 
+
+      function showDateSelectionDropdowns() {
+        [DIV_DAY1, DIV_DAY2].forEach(function(div_id) {
+          document.getElementById(div_id).innerHTML = "";
+        });
+        if (lookup_csv_global === null) {
+          console.error("lookup_csv_global is null");
+        }
+        let dtype = getDtypeSelection();
+        console.log(dtype)
+        if (dtype === null) {
+          return;
+        }
+
+        let day_options = data.filter(x => x["dtype"] == dtype).reverse();
+        const create_dropdown = function(parent_id, dropdown_id, default_text) {
+          let parent = document.getElementById(parent_id);
+
+          let select = document.createElement("select");
+          let default_option = document.createElement("option");
+          default_option.text = default_text;
+          select.add(default_option);
+          for (const row of day_options) {
+            let option = document.createElement("option");
+            option.value = row["path"];
+            let day = new Date(CURRENT_YEAR, 0, row["day"]).toISOString().split("T")[0]
+            option.text = "(" + day + ") " + row["path"];
+            select.add(option);
+          }
+          select.id = dropdown_id;
+
+          select.onchange = showComparisonTable;
+
+          parent.appendChild(select);
+        };
+
+        create_dropdown(DIV_DAY1, DAY1_DROPDOWN_ID, DAY1_DEFAULT_SELECTION);
+        create_dropdown(DIV_DAY2, DAY2_DROPDOWN_ID, DAY2_DEFAULT_SELECTION);
+      }
+
+      function showDtypeSelectionDropdown() {
+        let parent = document.getElementById(DTYPE_DIV);
+        parent.innerHTML = "";
+
+        fetch(LOOKUP_URL, {cache: "no-store"})
+          .then(async function(response) {
+            const text = await response.text();
+            let data = parseLookupCsv(text);
+
+            // stash the csv data globally for later use
+            lookup_csv_global = data;
+
+            let select = document.createElement("select");
+            let default_option = document.createElement("option");
+            default_option.text = DTYPE_DEFAULT_SELECTION;
+            select.add(default_option);
+
+            // TODO: we could also just get unique values from column 1
+            //       of lookup.csv
+            for (const dtype of SUPPORTED_DTYPE) {
+              console.log(dtype);
+              let dtype_option = document.createElement("option");
+              dtype_option.text = dtype_option.value = dtype;
+              select.add(dtype_option);
+            }
+
+            select.id = DTYPE_DROPDOWN_ID;
+            select.onchange = showDateSelectionDropdowns;
+            parent.appendChild(select);
+          });
+
+      }
+
       function run() {
-        showDateSelectionDropdowns();
+        showDtypeSelectionDropdown();
       }
 
       window.onload = run;
@@ -439,12 +540,12 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
   </head>
   <body>
     <h1>Torchbench metric diff tool</h1>
-    <div style="width: 500px;">
+    <div id="div_dtype"></div>
+    <div style="width: 500px;" id="dataset_container">
       <div style="width:240px; float: left" id="div_day1"></div>
       <div style="width:240px; float: right" id="div_day2"></div>
     </div>
     <br />
-    <div id="div_dtype"></div>
     <br />
     <div id="div_tables"></div>
   </body>
