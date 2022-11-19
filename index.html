@@ -450,15 +450,15 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         Promise.all(promises)
           .then(function() {
             for (const fname of DATA_FILES) {
-              const firstElement = function(iterable) {
+              const lastElement = function(iterable) {
                 if (iterable.length > 0) {
-                  return iterable[0];
+                  return iterable[iterable.length - 1];
                 }
                 return undefined;
               };
-              let suite = BENCHMARK_SUITES.filter(suite => fname.includes(suite))[0];
-              let config_type = Object.keys(CONFIGS).filter(cfg => fname.includes(cfg))[0];
-              let backend = BACKENDS.filter(b => fname.includes(b))[0];
+              let suite = lastElement(BENCHMARK_SUITES.filter(suite => fname.includes(suite)));
+              let config_type = lastElement(Object.keys(CONFIGS).filter(cfg => fname.includes(cfg)));
+              let backend = lastElement(BACKENDS.filter(b => fname.includes(b)));
 
               let config = CONFIGS[config_type];
 
