@@ -1,0 +1,17 @@
+dev,name,batch_size,convert_frame_assert.<locals>._convert_frame_assert
+cuda,BartForCausalLM,4,1.910327
+cuda,BertForQuestionAnswering,16,2.250198
+cuda,BlenderbotSmallForCausalLM,64,1.290354
+cuda,DebertaForMaskedLM,4,5.764497
+cuda,DebertaForQuestionAnswering,8,5.843531
+cuda,LayoutLMForSequenceClassification,16,2.661525
+cuda,MBartForCausalLM,4,1.874457
+cuda,MT5ForConditionalGeneration,16,4.780200
+cuda,MegatronBertForCausalLM,4,4.886130
+cuda,MobileBertForMaskedLM,64,11.241231
+cuda,PegasusForCausalLM,32,2.054365
+cuda,RobertaForQuestionAnswering,16,2.309391
+cuda,Speech2Text2ForCausalLM,256,1.096551
+cuda,T5ForConditionalGeneration,4,3.550660
+cuda,T5Small,4,3.344687
+cuda,XGLMForCausalLM,8,3.843749
