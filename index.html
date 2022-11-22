@@ -50,6 +50,7 @@
       const TEXT_DATA = "text";
       const NUMERICAL_DATA = "numerical";
       const RATIO_DATA = "ratio";
+      const GEOMEAN_DATA = "geomean";
 
       const CURRENT_YEAR = 2022;
 
@@ -95,7 +96,7 @@
           "timm_models": row[4],
         }),
         "get_name": row => row[1],
-        "data_type": NUMERICAL_DATA,
+        "data_type": GEOMEAN_DATA,
       };
 
       BENCHMARK_SUITES = ["torchbench", "huggingface", "timm"];
@@ -276,6 +277,42 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         return null;
       }
 
+      function generateColorGradient(
+        ratio,
+        ratio_threshold=0.1,
+        positive_is_good=true,
+      ) {
+        const clamp = function(x, min_val, max_val) {
+          if (x < min_val) {
+            return min_val;
+          }
+          if (x > max_val) {
+            return max_val;
+          }
+          return x;
+        };
+
+        const MAX_BRIGHTNESS = 255;
+        const display_ratio = clamp(
+          ratio,
+          1-ratio_threshold,
+          1+ratio_threshold
+        );
+
+        const diff = positive_is_good ? display_ratio-1 : 1-display_ratio;
+        const abs_diff = diff > 0 ? diff : -diff;
+
+        const otherColor = Math.floor(MAX_BRIGHTNESS - 200 * (abs_diff / ratio_threshold)).toString();
+        let full_color = `rgb(${MAX_BRIGHTNESS}, ${MAX_BRIGHTNESS}, ${MAX_BRIGHTNESS})`;
+        if (diff > 0) {
+          full_color = `rgb(${otherColor}, ${MAX_BRIGHTNESS}, ${otherColor})`;
+        } else {
+          full_color = `rgb(${MAX_BRIGHTNESS}, ${otherColor}, ${otherColor})`;
+        }
+
+        return full_color;
+      }
+
       function colorResults(
         data_type,
         old_value,
@@ -316,34 +353,24 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
 
           const [old_ratio, new_ratio] = [old_value, new_value].map(x => parseRatio(x));
 
-          const clamp = function(x, min_val, max_val) {
-            if (x < min_val) {
-              return min_val;
-            }
-            if (x > max_val) {
-              return max_val;
-            }
-            return x;
+
+          return generateColorGradient(
+            new_ratio / old_ratio,
+            0.1,
+            true,
+          );
+        } else if (data_type == GEOMEAN_DATA) {
+          const parseSpeedup = function(str_val) {
+            return parseFloat(str_val.split("x")[0]);
           };
 
-          const MAX_DIFF = 0.1;
-          const MIN_VAL = 1 - MAX_DIFF;
-          const MAX_VAL = 1 + MAX_DIFF;
-          const MAX_BRIGHTNESS = 255;
-          const display_ratio = clamp(new_ratio / old_ratio, MIN_VAL, MAX_VAL);
+          const [old_speedup, new_speedup] = [old_value, new_value].map(x => parseSpeedup(x));
 
-          const diff = display_ratio-1;
-          const abs_diff = diff > 0 ? diff : -diff;
-
-          const otherColor = Math.floor(MAX_BRIGHTNESS - 200 * (abs_diff / MAX_DIFF)).toString();
-          let full_color = `rgb(${MAX_BRIGHTNESS}, ${MAX_BRIGHTNESS}, ${MAX_BRIGHTNESS})`;
-          if (diff > 0) {
-            full_color = `rgb(${otherColor}, ${MAX_BRIGHTNESS}, ${otherColor})`;
-          } else {
-            full_color = `rgb(${MAX_BRIGHTNESS}, ${otherColor}, ${otherColor})`;
-          }
-
-          return full_color;
+          return generateColorGradient(
+            new_speedup / old_speedup,
+            0.1,
+            true,
+          );
         } else {
           const new_number = parseFloat(new_value);
           const old_number = parseFloat(old_value);
