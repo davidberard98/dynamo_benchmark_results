@@ -7,6 +7,8 @@ $ DESTDIR=dest_dir; LOGDIR=src_dir; find $LOGDIR -name *.csv | sed -E "s|^$LOGDI
 
 The data is put in the data/ branch.
 
+Or run updater.py periodically.
+
 # Viewing
 
 See https://davidberard98.github.io/dynamo_benchmark_results/.
