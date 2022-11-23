@@ -56,46 +56,50 @@
 
       const ACCURACY_CONFIG = {
         "columns": 4,
-        "get_results": row => ({"accuracy": row[3]}),
-        "get_name": row => row[1],
+        "get_results": row => ({"accuracy": row["accuracy"]}),
+        "get_name": row => row["name"],
         "data_type": TEXT_DATA,
       };
       const PERFORMANCE_CONFIG = {
         "columns": 7,
         "get_results": function(row) {
           return ({
-            "speedup": parseFloat(row[3]),
-            "abs_latency": parseFloat(row[4]),
-            "compilation_latency": parseFloat(row[5]),
-            "compression_ratio": parseFloat(row[6]),
+            "speedup": parseFloat(row["speedup"]),
+            "abs_latency": parseFloat(row["abs_latency"]),
+            "compilation_latency": parseFloat(row["compilation_latency"]),
+            "compression_ratio": parseFloat(row["compression_ratio"]),
           })
         },
-        "get_name": row => row[1],
+        "get_name": row => row["name"],
         "data_type": NUMERICAL_DATA,
       };
       const splitRatio = function(full_data) {
+        if (full_data === undefined) {
+          return undefined;
+        }
         return full_data.split(", ")[1]
       };
       const PASSRATE_CONFIG = {
         "columns": 5,
         "get_results": function(row) {
+          console.log("!! ", row);
           return ({
-            "torchbench": splitRatio(row[2]),
-            "huggingface": splitRatio(row[3]),
-            "timm_models": splitRatio(row[4]),
+            "torchbench": splitRatio(row["torchbench"]),
+            "huggingface": splitRatio(row["huggingface"]),
+            "timm_models": splitRatio(row["timm_models"]),
           })
         },
-        "get_name": row => row[1],
+        "get_name": row => row["Compiler"],
         "data_type": RATIO_DATA,
       };
       const GEOMEAN_CONFIG = {
         "columns": 5,
         "get_results": row => ({
-          "torchbench": row[2],
-          "huggingface": row[3],
-          "timm_models": row[4],
+          "torchbench": row["torchbench"],
+          "huggingface": row["huggingface"],
+          "timm_models": row["timm_models"],
         }),
-        "get_name": row => row[1],
+        "get_name": row => row["Compiler"],
         "data_type": GEOMEAN_DATA,
       };
 
@@ -233,9 +237,18 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
 
             return ret;
           }).filter(
-            x => x.length > 0 && x[0].length > 0
+            x => x.length > 0 && x.some(v => v.length > 0)
           );
         return as_array;
+      }
+
+      function csvDataToObject(data) {
+        const header = data[0];
+        return data.slice(1)
+          .filter(row => row.length <= header.length)
+          .map(row => Object.fromEntries(
+            row.map((val, idx) => [header[idx], val])
+          ));
       }
 
       function parseLookupCsv(msg) {
@@ -347,6 +360,9 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
           }
         } else if (data_type == RATIO_DATA) {
           const parseRatio = function(str_val) {
+            if (typeof(str_val) !== "string") {
+              return undefined;
+            }
             [num, den] = str_val.split("/").map(x => parseFloat(x));
             return num/den;
           };
@@ -361,6 +377,9 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
           );
         } else if (data_type == GEOMEAN_DATA) {
           const parseSpeedup = function(str_val) {
+            if (typeof(str_val) !== "string") {
+              return undefined;
+            }
             return parseFloat(str_val.split("x")[0]);
           };
 
@@ -490,10 +509,13 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
               let config = CONFIGS[config_type];
 
               const parseRawData = function(raw_data) {
+                let q = naiveParseCsv(raw_data, ",", config["columns"]);
+                let r = csvDataToObject(
+                  q
+                );
+                console.log(q, r);
                 return Object.fromEntries(
-                  naiveParseCsv(raw_data, ",", config["columns"])
-                    .slice(1)
-                    .map(row => [
+                  r.map(row => [
                       config["get_name"](row),
                       config["get_results"](row),
                     ])
