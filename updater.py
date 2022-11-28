@@ -4,6 +4,8 @@ import pathlib
 import shutil
 import subprocess
 
+from random import random
+
 SOURCE_PATH = pathlib.Path("/data/home/anijain/cluster/cron_logs/")
 DEST_PATH = pathlib.Path(__file__).parent.resolve()
 
@@ -33,6 +35,11 @@ def main():
     new_paths = [
         path for path in paths if len(get_csv_files(SOURCE_PATH / path)) > 0 and not (DEST_PATH / path).is_dir()
     ]
+
+    if random() > 0.99:
+        for r in [path for path in paths if len(get_csv_files(SOURCE_PATH / path)) > 0][-5:]:
+            if r not in new_paths:
+                new_paths.append(r)
 
     if len(new_paths) == 0:
         return
