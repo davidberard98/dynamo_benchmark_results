@@ -74,9 +74,6 @@
         "data_type": NUMERICAL_DATA,
       };
       const splitRatio = function(full_data) {
-        if (full_data === undefined) {
-          return undefined;
-        }
         return full_data.split(", ")[1]
       };
       const PASSRATE_CONFIG = {
@@ -241,15 +238,6 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         return as_array;
       }
 
-      function csvDataToObject(data) {
-        const header = data[0];
-        return data.slice(1)
-          .filter(row => row.length <= header.length)
-          .map(row => Object.fromEntries(
-            row.map((val, idx) => [header[idx], val])
-          ));
-      }
-
       function parseLookupCsv(msg) {
         data = naiveParseCsv(msg, ",", 4);
         data = data.map(row => ({
@@ -359,9 +347,6 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
           }
         } else if (data_type == RATIO_DATA) {
           const parseRatio = function(str_val) {
-            if (typeof(str_val) !== "string") {
-              return undefined;
-            }
             [num, den] = str_val.split("/").map(x => parseFloat(x));
             return num/den;
           };
@@ -376,9 +361,6 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
           );
         } else if (data_type == GEOMEAN_DATA) {
           const parseSpeedup = function(str_val) {
-            if (typeof(str_val) !== "string") {
-              return undefined;
-            }
             return parseFloat(str_val.split("x")[0]);
           };
 
