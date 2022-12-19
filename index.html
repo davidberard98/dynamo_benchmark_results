@@ -504,9 +504,18 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
               const map2 = parseRawData(results[fname]["day2"]);
 
               let data = [];
-              for (const model of Object.keys(map1)) {
+              let models = Object.keys(map1);
+              for (const model of Object.keys(map2)) {
+                if (!models.includes(model)) {
+                  models.push(model);
+                }
+              }
+              for (const model of models) {
                 let res1 = map1[model];
                 let res2 = map2[model];
+                if (res1 === undefined) {
+                  res1 = {}
+                }
                 if (res2 === undefined) {
                   res2 = {}
                 }
