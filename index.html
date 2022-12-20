@@ -596,44 +596,6 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
       }
 
       function showDateSelectionDropdowns() {
-        fetch(LOOKUP_URL, {cache: "no-store"})
-          .then(async function(response) {
-            const text = await response.text();
-            let data = parseLookupCsv(text);
-
-            // stash the csv data globally for later use
-            lookup_csv_global = data;
-
-            let unique_days = [...new Set(data.map(x => x["day"]))].reverse();
-            console.log(data);
-            console.log(unique_days);
-            const create_dropdown = function(parent_id, dropdown_id, default_text) {
-              let parent = document.getElementById(parent_id);
-
-              let select = document.createElement("select");
-              let default_option = document.createElement("option");
-              default_option.text = default_text;
-              select.add(default_option);
-              for (const day of unique_days) {
-                let option = document.createElement("option");
-                option.value = day;
-                option.text = new Date(CURRENT_YEAR, 0, day).toISOString().split("T")[0];
-                select.add(option);
-              }
-              select.id = dropdown_id;
-
-              select.onchange = showDtypeSelectionDropdown;
-
-              parent.appendChild(select);
-            };
-
-            create_dropdown(DIV_DAY1, DAY1_DROPDOWN_ID, DAY1_DEFAULT_SELECTION);
-            create_dropdown(DIV_DAY2, DAY2_DROPDOWN_ID, DAY2_DEFAULT_SELECTION);
-          })
-      }
-
-
-      function showDateSelectionDropdowns() {
         [DIV_DAY1, DIV_DAY2].forEach(function(div_id) {
           document.getElementById(div_id).innerHTML = "";
         });
