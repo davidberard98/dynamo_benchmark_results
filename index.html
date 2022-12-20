@@ -441,6 +441,11 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
           return;
         }
 
+        let url = new URL(window.location);
+        url.searchParams.set('day1', day1);
+        url.searchParams.set('day2', day2);
+        window.history.pushState({}, "", url);
+
         // get common dtype options from
         const day1_rows = lookup_csv_global
                             .filter(row => row["path"] == day1 && row["dtype"] == dtype);
@@ -642,7 +647,31 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         }
 
         let day_options = data.filter(x => x["dtype"] == dtype).reverse();
-        const create_dropdown = function(parent_id, dropdown_id, default_text) {
+
+        let url = new URL(window.location);
+
+        let days_specified_in_url = true;
+
+        // clear day selections if they are bad
+        ["day1", "day2"].forEach(function(day_x) {
+          const value = url.searchParams.get(day_x);
+          if (value === undefined) {
+            days_specified_in_url = false;
+            return;
+          }
+
+          if (!day_options.map(x => x["path"]).includes(value)) {
+            days_specified_in_url = false;
+            url.searchParams.delete(day_x);
+          }
+        });
+
+        url.searchParams.set('dtype', dtype);
+        window.history.pushState({}, "", url);
+
+        const create_dropdown = function(parent_id, dropdown_id, default_text, day_idx) {
+          let dayx_url_selection = url.searchParams.get("day" + day_idx);
+
           let parent = document.getElementById(parent_id);
 
           let select = document.createElement("select");
@@ -655,6 +684,9 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
             let day = new Date(CURRENT_YEAR, 0, row["day"]).toISOString().split("T")[0]
             option.text = "(" + day + ") " + row["path"];
             select.add(option);
+            if (row["path"] === dayx_url_selection) {
+              option.selected = true;
+            }
           }
           select.id = dropdown_id;
 
@@ -663,13 +695,19 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
           parent.appendChild(select);
         };
 
-        create_dropdown(DIV_DAY1, DAY1_DROPDOWN_ID, DAY1_DEFAULT_SELECTION);
-        create_dropdown(DIV_DAY2, DAY2_DROPDOWN_ID, DAY2_DEFAULT_SELECTION);
+        create_dropdown(DIV_DAY1, DAY1_DROPDOWN_ID, DAY1_DEFAULT_SELECTION, 1);
+        create_dropdown(DIV_DAY2, DAY2_DROPDOWN_ID, DAY2_DEFAULT_SELECTION, 2);
+
+        showComparisonTable();
       }
 
       function showDtypeSelectionDropdown() {
         let parent = document.getElementById(DTYPE_DIV);
         parent.innerHTML = "";
+
+        let url = new URL(window.location);
+        const dtype_select = url.searchParams.get('dtype');
+        console.log("!! dtype_select", dtype_select)
 
         fetch(LOOKUP_URL, {cache: "no-store"})
           .then(async function(response) {
@@ -691,11 +729,18 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
               let dtype_option = document.createElement("option");
               dtype_option.text = dtype_option.value = dtype;
               select.add(dtype_option);
+              if (dtype_select === dtype) {
+                dtype_option.selected = true;
+              }
             }
 
             select.id = DTYPE_DROPDOWN_ID;
             select.onchange = showDateSelectionDropdowns;
             parent.appendChild(select);
+
+            if (dtype_select !== undefined) {
+              showDateSelectionDropdowns();
+            }
           });
 
       }
