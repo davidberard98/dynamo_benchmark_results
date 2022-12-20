@@ -41,6 +41,9 @@
       const DAY1_DROPDOWN_ID = "dropdown_day1";
       const DAY2_DROPDOWN_ID = "dropdown_day2";
 
+      const DIV_SHOWLESS = "div_showless";
+      const SHOWLESS_CHECK_ID = "check_showless";
+
       const DTYPE_DIV = "div_dtype";
       const DTYPE_DEFAULT_SELECTION = "Select dtype";
       const DTYPE_DROPDOWN_ID = "dropdown_dtype";
@@ -53,6 +56,11 @@
       const GEOMEAN_DATA = "geomean";
 
       const CURRENT_YEAR = 2022;
+
+      const MAX_RED_COLOR = "#FF2222";
+      const MAX_YELLOW_COLOR = "#FFFF22";
+      const MAX_GREEN_COLOR = "#22FF22";
+      const MAX_COLORS = [MAX_RED_COLOR, MAX_YELLOW_COLOR, MAX_GREEN_COLOR];
 
       const ACCURACY_CONFIG = {
         "columns": 4,
@@ -337,13 +345,13 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
           const diff = new_order - old_order;
           switch (diff) {
             case -2: case -1:
-              return "#22FF22";
+              return MAX_GREEN_COLOR;
             case 0:
               return "#FFFFFF";
             case 1:
-              return "#FFFF22";
+              return MAX_YELLOW_COLOR;
             case 2:
-              return "#FF2222";
+              return MAX_RED_COLOR;
           }
         } else if (data_type == RATIO_DATA) {
           const parseRatio = function(str_val) {
@@ -378,14 +386,17 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
             return isNaN(num) || num == 0;
           };
           if (isBadNumber(new_number) && !isBadNumber(old_number)) {
-            return "#FF2222";
+            return MAX_RED_COLOR;
           }
           if (!isBadNumber(new_number) && isBadNumber(old_number)) {
-            return "#22FF22";
+            return MAX_GREEN_COLOR;
           }
 
-          // TODO gradients
-          return "#FFFFFF";
+          return generateColorGradient(
+            old_number / new_number,
+            0.1,
+            true,
+          );
         }
       }
 
@@ -394,6 +405,7 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         config_name,
         backend,
         data_type,
+        show_significant_only,
         data, // expect {"model": .., "metric_name": .., "new_value": .., "old_value": ..}
       ) {
         let table = document.createElement("table");
@@ -406,6 +418,16 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         });
 
         for (const row of data) {
+          // hacky way of filtering results: if the color is maxed out, it's an "extremal" value.
+          const background_color = colorResults(data_type, row["old_value"], row["new_value"]);
+          if (
+            show_significant_only
+            && [TEXT_DATA, NUMERICAL_DATA].includes(data_type)
+            && !MAX_COLORS.includes(background_color)
+          ) {
+            continue;
+          }
+
           let data_row = document.createElement("tr");
           table.appendChild(data_row);
           [
@@ -421,7 +443,7 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
             td.appendChild(document.createTextNode(datapoint));
             data_row.appendChild(td);
           })
-          data_row.lastChild.style.backgroundColor = colorResults(data_type, row["old_value"], row["new_value"]);
+          data_row.lastChild.style.backgroundColor = background_color;
         }
 
         return table;
@@ -440,6 +462,9 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         if (day1 === null || day2 === null) {
           return;
         }
+
+        const show_significant_only = document.getElementById(SHOWLESS_CHECK_ID).checked;
+        console.log("SSO: " + show_significant_only)
 
         let url = new URL(window.location);
         url.searchParams.set('day1', day1);
@@ -542,6 +567,7 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
                 config_type,
                 backend,
                 config["data_type"],
+                show_significant_only,
                 data);
 
               let title = document.createElement("h3");
@@ -599,6 +625,7 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         [DIV_DAY1, DIV_DAY2].forEach(function(div_id) {
           document.getElementById(div_id).innerHTML = "";
         });
+        document.getElementById(DIV_SHOWLESS).innerHTML = "";
         if (lookup_csv_global === null) {
           console.error("lookup_csv_global is null");
         }
@@ -657,8 +684,22 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
           parent.appendChild(select);
         };
 
+        const create_checkbox = function() {
+          let parent = document.getElementById(DIV_SHOWLESS);
+
+          let checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.id = SHOWLESS_CHECK_ID;
+
+          checkbox.onchange = showComparisonTable;
+
+          parent.appendChild(checkbox);
+          parent.appendChild(document.createTextNode("Only show \"significant\" changes"))
+        }
+
         create_dropdown(DIV_DAY1, DAY1_DROPDOWN_ID, DAY1_DEFAULT_SELECTION, 1);
         create_dropdown(DIV_DAY2, DAY2_DROPDOWN_ID, DAY2_DEFAULT_SELECTION, 2);
+        create_checkbox();
 
         showComparisonTable();
       }
@@ -718,6 +759,10 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
     <div style="width: 500px;" id="dataset_container">
       <div style="width:240px; float: left" id="div_day1"></div>
       <div style="width:240px; float: right" id="div_day2"></div>
+    </div>
+    <div style="width: 500px;" id="dataset_container">
+      <div style="width:240px; float: left" id="div_showless"></div>
+      <div style="width:240px; float: right" id="div_lesslimit"></div>
     </div>
     <br />
     <br />
