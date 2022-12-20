@@ -707,7 +707,6 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
 
         let url = new URL(window.location);
         const dtype_select = url.searchParams.get('dtype');
-        console.log("!! dtype_select", dtype_select)
 
         fetch(LOOKUP_URL, {cache: "no-store"})
           .then(async function(response) {
@@ -725,7 +724,6 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
             // TODO: we could also just get unique values from column 1
             //       of lookup.csv
             for (const dtype of SUPPORTED_DTYPE) {
-              console.log(dtype);
               let dtype_option = document.createElement("option");
               dtype_option.text = dtype_option.value = dtype;
               select.add(dtype_option);
