@@ -320,10 +320,7 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
       }
 
       function getDatasourceSelection() {
-        if (document.getElementById(DROPDOWN_DATASOURCE).selectedIndex > 0) {
-          return document.getElementById(DROPDOWN_DATASOURCE).selectedOptions[0].value;
-        }
-        return null;
+        return document.getElementById(DROPDOWN_DATASOURCE).selectedOptions[0].value;
       }
 
       function generateColorGradient(
