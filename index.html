@@ -62,6 +62,8 @@
       const NUMERICAL_DATA = "numerical";
       const RATIO_DATA = "ratio";
       const GEOMEAN_DATA = "geomean";
+      const MEMORY_DATA = "memory";
+      const COMP_TIME_DATA = "comp_time";
 
       const CURRENT_YEAR = 2022;
 
@@ -114,6 +116,26 @@
         "get_name": row => row[1],
         "data_type": GEOMEAN_DATA,
       };
+      const MEMORY_CONFIG = {
+        "columns": 5,
+        "get_results": row => ({
+          "torchbench": row[2],
+          "huggingface": row[3],
+          "timm_models": row[4],
+        }),
+        "get_name": row => row[1],
+        "data_type": MEMORY_DATA,
+      };
+      const COMP_TIME_CONFIG = {
+        "columns": 5,
+        "get_results": row => ({
+          "torchbench": row[2],
+          "huggingface": row[3],
+          "timm_models": row[4],
+        }),
+        "get_name": row => row[1],
+        "data_type": COMP_TIME_DATA,
+      };
 
       BENCHMARK_SUITES = ["torchbench", "huggingface", "timm"];
       BACKENDS = ["eager", "inductor", "inductor_no_cudagraphs"];
@@ -121,7 +143,9 @@
         "accuracy": ACCURACY_CONFIG,
         "performance": PERFORMANCE_CONFIG,
         "passrate": PASSRATE_CONFIG,
-        "geomean": GEOMEAN_CONFIG
+        "geomean": GEOMEAN_CONFIG,
+        "memory.csv": MEMORY_CONFIG,
+        "comp_time.csv": COMP_TIME_CONFIG
       };
 
       const DATA_FILES = [
@@ -161,6 +185,8 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
 */
         "passrate.csv",
         "geomean.csv",
+        "memory.csv",
+        "comp_time.csv",
         "eager_huggingface_{}_training_cuda_accuracy.csv",
         "eager_huggingface_{}_training_cuda_performance.csv",
         //"eager_huggingface_{}_training_cuda_performance_compilation_metrics.csv",
@@ -382,7 +408,7 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
             0.1,
             true,
           );
-        } else if (data_type == GEOMEAN_DATA) {
+        } else if (data_type == GEOMEAN_DATA || data_type == MEMORY_DATA) {
           const parseSpeedup = function(str_val) {
             return parseFloat(str_val.split("x")[0]);
           };
@@ -392,7 +418,7 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
           return generateColorGradient(
             new_speedup / old_speedup,
             0.1,
-            true,
+            data_type == GEOMEAN_DATA,
           );
         } else {
           const new_number = parseFloat(new_value);
