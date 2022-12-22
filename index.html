@@ -29,8 +29,13 @@
       }
     </style>
     <script>
-      const BASE_URL = "https://raw.githubusercontent.com/davidberard98/dynamo_benchmark_results/data/";
-      const LOOKUP_URL = BASE_URL + "lookup.csv";
+      const BASE_URL = "https://raw.githubusercontent.com/davidberard98/dynamo_benchmark_results/";
+      const BRANCHES = {
+        "anijain": "data",
+        "williamwen": "data_williamwen",
+      };
+      const DEFAULT_BRANCH_SOURCE = "williamwen";
+      const LOOKUP_FILE = "lookup.csv";
       const METRIC = "performance";
       const SUPPORTED_DTYPE = ["amp", "float32"];
 
@@ -47,6 +52,9 @@
       const DTYPE_DIV = "div_dtype";
       const DTYPE_DEFAULT_SELECTION = "Select dtype";
       const DTYPE_DROPDOWN_ID = "dropdown_dtype";
+
+      const DIV_DATASOURCE = "div_datasource";
+      const DROPDOWN_DATASOURCE = "dropdown_datasource";
 
       const TABLES_DIV = "div_tables";
 
@@ -285,6 +293,13 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         return null;
       }
 
+      function getDatasourceSelection() {
+        if (document.getElementById(DROPDOWN_DATASOURCE).selectedIndex > 0) {
+          return document.getElementById(DROPDOWN_DATASOURCE).selectedOptions[0].value;
+        }
+        return null;
+      }
+
       function generateColorGradient(
         ratio,
         ratio_threshold=0.1,
@@ -481,8 +496,10 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
           console.error("didn't find a row in lookup.csv for this configuration of day & dtype");
         }
 
-        const day1_url = BASE_URL + day1_rows[0]["path"] + "/";
-        const day2_url = BASE_URL + day2_rows[0]["path"] + "/";
+        const branch = BRANCHES[getDatasourceSelection()];
+        const branch_url = BASE_URL + branch + "/";
+        const day1_url = branch_url + day1_rows[0]["path"] + "/";
+        const day2_url = branch_url + day2_rows[0]["path"] + "/";
 
         let results = {};
         for (const fname of DATA_FILES) {
@@ -581,46 +598,6 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
           });
       }
 
-      function showDtypeSelectionDropdown() {
-        let parent = document.getElementById(DTYPE_DIV);
-        parent.innerHTML = "";
-        if (lookup_csv_global === null) {
-          console.error("lookup_csv_global is null");
-        }
-        if (!areDaysSelected()) {
-          return;
-        }
-
-        let select = document.createElement("select");
-        let default_option = document.createElement("option");
-        default_option.text = DTYPE_DEFAULT_SELECTION;
-        select.add(default_option);
-
-        [day1, day2] = getDaySelections();
-
-        // get common dtype options from
-        const day1_dtypes = lookup_csv_global
-                            .filter(row => row["day"] == day1)
-                            .map(row => row["dtype"]);
-        const day2_dtypes = lookup_csv_global
-                            .filter(row => row["day"] == day2)
-                            .map(row => row["dtype"]);
-
-        const available_dtypes = day1_dtypes.filter(dtype => day2_dtypes.includes(dtype));
-        console.log(day1_dtypes, day2_dtypes, available_dtypes);
-
-        for (const dtype of available_dtypes) {
-          console.log(dtype);
-          let dtype_option = document.createElement("option");
-          dtype_option.text = dtype_option.value = dtype;
-          select.add(dtype_option);
-        }
-
-        select.id = DTYPE_DROPDOWN_ID;
-        select.onchange = showComparisonTable;
-        parent.appendChild(select);
-      }
-
       function showDateSelectionDropdowns() {
         [DIV_DAY1, DIV_DAY2].forEach(function(div_id) {
           document.getElementById(div_id).innerHTML = "";
@@ -708,10 +685,16 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
         let parent = document.getElementById(DTYPE_DIV);
         parent.innerHTML = "";
 
+        const datasource = getDatasourceSelection();
+        const branch = BRANCHES[datasource];
+        const lookup_url = BASE_URL + branch + "/" + LOOKUP_FILE;
+
         let url = new URL(window.location);
         const dtype_select = url.searchParams.get('dtype');
+        url.searchParams.set('datasource', datasource);
+        window.history.pushState({}, "", url);
 
-        fetch(LOOKUP_URL, {cache: "no-store"})
+        fetch(lookup_url, {cache: "no-store"})
           .then(async function(response) {
             const text = await response.text();
             let data = parseLookupCsv(text);
@@ -746,8 +729,34 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
 
       }
 
-      function run() {
+      function showDataSourceSelection() {
+        let parent = document.getElementById(DIV_DATASOURCE);
+        let url = new URL(window.location);
+        let url_datasource = url.searchParams.get('datasource');
+        if (url_datasource === undefined || url_datasource === null) {
+          url_datasource = DEFAULT_BRANCH_SOURCE;
+        }
+
+        let select = document.createElement("select");
+        for (const datasource of Object.keys(BRANCHES)) {
+          let option = document.createElement("option");
+          option.text = option.value = datasource;
+          if (url_datasource === datasource) {
+            option.selected = true;
+          }
+          select.add(option);
+        }
+
+        select.id = DROPDOWN_DATASOURCE;
+        select.onchange = showDtypeSelectionDropdown;
+        parent.appendChild(document.createTextNode("Select data source "));
+        parent.appendChild(select);
+
         showDtypeSelectionDropdown();
+      }
+
+      function run() {
+        showDataSourceSelection();
       }
 
       window.onload = run;
@@ -755,6 +764,7 @@ nvprims_nvfuser_torchbench_amp_training_cuda_performance_compilation_metrics.csv
   </head>
   <body>
     <h1>Torchbench metric diff tool</h1>
+    <div id="div_datasource"></div>
     <div id="div_dtype"></div>
     <div style="width: 500px;" id="dataset_container">
       <div style="width:240px; float: left" id="div_day1"></div>
