@@ -6,8 +6,8 @@ import subprocess
 
 from random import random
 
-LOG_SOURCE = "anijain"
-# LOG_SOURCE = "williamwen"
+# LOG_SOURCE = "anijain"
+LOG_SOURCE = "williamwen"
 
 if LOG_SOURCE == "anijain":
     SOURCE_PATH = pathlib.Path("/data/home/anijain/cluster/cron_logs/")
@@ -74,11 +74,14 @@ def main():
         *files_to_git_add
     ])
 
+    msg = "Add:\n"
+    for x in files_to_git_add:
+        msg.append(str(x) + ",\n")
     subprocess.run([
         GIT_BIN,
         "commit",
         "-m",
-        f"Add: {', '.join([str(x) for x in files_to_git_add])}",
+        msg,
     ])
     subprocess.run([
         GIT_BIN,
