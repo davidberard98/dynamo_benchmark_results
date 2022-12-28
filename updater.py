@@ -76,7 +76,7 @@ def main():
 
     msg = "Add:\n"
     for x in files_to_git_add:
-        msg.append(str(x) + ",\n")
+        msg += str(x) + ",\n"
     subprocess.run([
         GIT_BIN,
         "commit",
