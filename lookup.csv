@@ -55,6 +55,6 @@
 001,performance,float32,day_001_01_01_23_performance_float32_560
 001,performance,amp,day_001_01_01_23_performance_amp_179
 002,performance,float32,day_002_02_01_23_performance_float32_103
+002,performance,amp,day_002_02_01_23_performance_amp_731
 003,performance,float32,day_003_03_01_23_performance_float32_926
 003,performance,amp,day_003_03_01_23_performance_amp_344
-002,performance,amp,day_002_02_01_23_performance_amp_731
