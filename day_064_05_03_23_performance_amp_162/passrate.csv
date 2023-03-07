@@ -1,0 +1,5 @@
+,Compiler,torchbench,huggingface,timm_models
+eager,eager,"82%, 50/61","100%, 45/45","100%, 61/61"
+aot_eager,aot_eager,"79%, 48/61","100%, 45/45","92%, 56/61"
+inductor,inductor,"72%, 44/61","91%, 41/45","93%, 57/61"
+inductor_no_cudagraphs,inductor_no_cudagraphs,"75%, 46/61","98%, 44/45","93%, 57/61"
