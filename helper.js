@@ -294,6 +294,7 @@ function colorResults(
       const result_order = {
         "pass": 0,
         "fail_accuracy": 1,
+        "eager_variation": 1,
         "fail_to_run": 2,
       };
       if (result_order[x] === undefined) {
