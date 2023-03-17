@@ -319,6 +319,9 @@ function colorResults(
     }
   } else if (data_type == RATIO_DATA) {
     const parseRatio = function(str_val) {
+      if (str_val.includes(",")) {
+        str_val = str_val.split(",")[1];
+      }
       [num, den] = str_val.split("/").map(x => parseFloat(x));
       return num/den;
     };
