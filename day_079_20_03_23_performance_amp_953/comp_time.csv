@@ -1,0 +1,5 @@
+,Compiler,torchbench,huggingface,timm_models
+eager,eager,4.75,7.42,5.95
+aot_eager,aot_eager,9.38,15.80,12.91
+inductor,inductor,60.87,70.64,103.83
+inductor_no_cudagraphs,inductor_no_cudagraphs,59.52,54.41,103.88
